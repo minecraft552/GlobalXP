@@ -33,21 +33,16 @@ public class XPBlockEntityRenderer implements BlockEntityRenderer<XPBlockEntity>
 
 		poseStack.pushPose();
 
-		if (Configuration.CLIENT.renderNameplate.get() && be.getBlockPos() != null && mc.hitResult instanceof BlockHitResult hitResult && be.getBlockPos().equals(hitResult.getBlockPos())) {
-			Component levelsString = Component.literal((int) be.getStoredLevels() + " (" + be.getStoredXP() + ")");
-			float opacity = mc.options.getBackgroundOpacity(0.25F);
-			int j = (int) (opacity * 255.0F) << 24;
-			float halfWidth = -mc.font.width(levelsString) / 2;
-			Matrix4f positionMatrix;
+		if (be.getBlockPos() != null && mc.hitResult instanceof BlockHitResult hitResult && be.getBlockPos().equals(hitResult.getBlockPos())) {
+			double y = 1.5D;
 
-			poseStack.pushPose();
-			poseStack.translate(0.5D, 1.5D, 0.5D);
-			poseStack.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-			poseStack.scale(-0.025F, -0.025F, 0.025F);
-			positionMatrix = poseStack.last().pose();
-			mc.font.drawInBatch(levelsString, halfWidth, 0, 553648127, false, positionMatrix, buffer, DisplayMode.SEE_THROUGH, j, combinedLight); //renderString
-			mc.font.drawInBatch(levelsString, halfWidth, 0, -1, false, positionMatrix, buffer, DisplayMode.NORMAL, 0, combinedLight);
-			poseStack.popPose();
+			if (Configuration.CLIENT.renderXPInfo.get()) {
+				renderTextAboveBlock(mc, poseStack, buffer, combinedLight, Component.literal((int) be.getStoredLevels() + " (" + be.getStoredXP() + ")"), y);
+				y += 0.25D;
+			}
+
+			if (be.hasCustomName() && Configuration.CLIENT.renderCustomName.get())
+				renderTextAboveBlock(mc, poseStack, buffer, combinedLight, be.getCustomName(), y);
 		}
 
 		float time = be.getLevel().getLevelData().getGameTime() + partialTicks;
@@ -57,6 +52,22 @@ public class XPBlockEntityRenderer implements BlockEntityRenderer<XPBlockEntity>
 		poseStack.translate(0.5D, 0.4D + offset, 0.5D);
 		poseStack.mulPose(Axis.YP.rotationDegrees(time * 4.0F * Configuration.CLIENT.spinSpeed.get().floatValue()));
 		mc.getItemRenderer().render(emerald, ItemDisplayContext.GROUND, false, poseStack, buffer, combinedLight, combinedOverlay, model);
+		poseStack.popPose();
+	}
+
+	public void renderTextAboveBlock(Minecraft mc, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, Component text, double y) {
+		float opacity = mc.options.getBackgroundOpacity(0.25F);
+		int backgroundColor = (int) (opacity * 255.0F) << 24;
+		float halfWidth = -mc.font.width(text) / 2;
+		Matrix4f positionMatrix;
+
+		poseStack.pushPose();
+		poseStack.translate(0.5D, y, 0.5D);
+		poseStack.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
+		poseStack.scale(-0.025F, -0.025F, 0.025F);
+		positionMatrix = poseStack.last().pose();
+		mc.font.drawInBatch(text, halfWidth, 0, 553648127, false, positionMatrix, buffer, DisplayMode.SEE_THROUGH, backgroundColor, combinedLight);
+		mc.font.drawInBatch(text, halfWidth, 0, -1, false, positionMatrix, buffer, DisplayMode.NORMAL, 0, combinedLight);
 		poseStack.popPose();
 	}
 }
