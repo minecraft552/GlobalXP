@@ -15,8 +15,6 @@ import snownee.jade.api.config.IPluginConfig;
 
 @WailaPlugin(GlobalXP.MOD_ID)
 public class JadeDataProvider implements IWailaPlugin, IBlockComponentProvider {
-	public static final ResourceLocation XP_BLOCK = new ResourceLocation(GlobalXP.MOD_ID, "xp_block");
-
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
 		registration.registerBlockComponent(this, XPBlock.class);
