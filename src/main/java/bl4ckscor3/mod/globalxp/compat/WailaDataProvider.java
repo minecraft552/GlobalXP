@@ -2,8 +2,6 @@ package bl4ckscor3.mod.globalxp.compat;
 
 import bl4ckscor3.mod.globalxp.GlobalXP;
 import bl4ckscor3.mod.globalxp.xpblock.XPBlock;
-import bl4ckscor3.mod.globalxp.xpblock.XPBlockEntity;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -14,7 +12,7 @@ import snownee.jade.api.WailaPlugin;
 import snownee.jade.api.config.IPluginConfig;
 
 @WailaPlugin(GlobalXP.MOD_ID)
-public class WailaDataProvider implements IWailaPlugin, IBlockComponentProvider {
+public final class WailaDataProvider extends HUDOverlayModHandler implements IWailaPlugin, IBlockComponentProvider {
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
 		registration.registerBlockComponent(this, XPBlock.class);
@@ -22,12 +20,7 @@ public class WailaDataProvider implements IWailaPlugin, IBlockComponentProvider 
 
 	@Override
 	public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-		if (accessor.getBlockEntity() instanceof XPBlockEntity xpBlock) {
-			tooltip.add(Component.translatable("info.globalxp.levels", String.format("%.2f", xpBlock.getStoredLevels())));
-
-			if (accessor.getPlayer().isCrouching())
-				tooltip.add(Component.translatable("info.globalxp.xp", xpBlock.getStoredXP()));
-		}
+		addXPInfo(accessor.getBlockEntity(), accessor.getPlayer().isCrouching(), tooltip::add);
 	}
 
 	@Override

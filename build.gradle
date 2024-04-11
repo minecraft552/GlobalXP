@@ -1,19 +1,10 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-    }
+plugins {
+	id 'eclipse'
+	id 'idea'
+	id 'net.minecraftforge.gradle' version '5.1.+'
+	id 'org.spongepowered.mixin' version '0.7.+'
+	id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
-
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'eclipse'
 
 version = '1.10.3'
 group = 'bl4ckscor3.mod.globalxp'
@@ -63,8 +54,10 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.4-45.1.0'
 
-    implementation fg.deobf("curse.maven:jade-324717:4439089")
-    implementation fg.deobf("curse.maven:the-one-probe-245211:4159743")
+    implementation fg.deobf("curse.maven:jade-324717:4573063")
+    implementation fg.deobf("curse.maven:the-one-probe-245211:4442439")
+	implementation fg.deobf("curse.maven:wthit-forge-455982:5151085")
+	implementation fg.deobf("curse.maven:badpackets-615134:4784395") //wthit dependency
 }
 
 jar {
