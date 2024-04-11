@@ -1,0 +1,6 @@
+{
+	"globalxp:plugin": {
+		"initializer": "bl4ckscor3.mod.globalxp.compat.WTHITDataProvider",
+		"side": "*"
+	}
+}

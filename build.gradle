@@ -43,8 +43,10 @@ repositories {
 dependencies {
 	implementation 'net.neoforged:neoforge:20.4.227'
 
-	implementation "curse.maven:jade-324717:4845321"
-	implementation "curse.maven:the-one-probe-245211:4629624"
+	implementation "curse.maven:jade-324717:5109393"
+	implementation "curse.maven:the-one-probe-245211:5159289"
+	implementation "curse.maven:wthit-forge-455982:5208362"
+	implementation "curse.maven:badpackets-615134:5130415" //wthit dependency
 }
 
 tasks.named('jar', Jar).configure {
