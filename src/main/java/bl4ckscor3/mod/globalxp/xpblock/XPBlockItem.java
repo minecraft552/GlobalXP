@@ -4,6 +4,7 @@ import java.util.List;
 
 import bl4ckscor3.mod.globalxp.XPUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.BlockItem;
@@ -22,15 +23,22 @@ public class XPBlockItem extends BlockItem {
 
 	@Override
 	public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
-		if (!stack.hasTag()) {
-			tooltip.add(Component.translatable("info.globalxp.levels", 0).setStyle(STYLE));
-			tooltip.add(Component.translatable("info.globalxp.xp", 0).setStyle(STYLE));
-		}
+		if (!stack.hasTag())
+			addInfo(tooltip, "0", 0);
 		else {
-			int storedXP = stack.getTag().getCompound("BlockEntityTag").getInt("stored_xp");
+			CompoundTag stackTag = stack.getTag();
+			int storedXP;
 
-			tooltip.add(Component.translatable("info.globalxp.levels", String.format("%.2f", XPUtils.calculateStoredLevels(storedXP))).setStyle(STYLE));
-			tooltip.add(Component.translatable("info.globalxp.xp", storedXP).setStyle(STYLE));
+			if (stackTag.contains(BLOCK_ENTITY_TAG))
+				stackTag = stackTag.getCompound(BLOCK_ENTITY_TAG);
+
+			storedXP = stackTag.getInt("stored_xp");
+			addInfo(tooltip, String.format("%.2f", XPUtils.calculateStoredLevels(storedXP)), storedXP);
 		}
+	}
+
+	public void addInfo(List<Component> tooltip, String storedLevels, int storedXP) {
+		tooltip.add(Component.translatable("info.globalxp.levels", storedLevels).setStyle(STYLE));
+		tooltip.add(Component.translatable("info.globalxp.xp", storedXP).setStyle(STYLE));
 	}
 }

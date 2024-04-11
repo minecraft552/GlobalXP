@@ -132,14 +132,17 @@ public class XPBlock extends BaseEntityBlock {
 			return;
 
 		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock) {
-			CompoundTag tag = stack.getTag().getCompound("BlockEntityTag");
+			if (stack.hasCustomHoverName())
+				xpBlock.setCustomName(stack.getHoverName());
 
-			tag.putInt("x", pos.getX());
-			tag.putInt("y", pos.getY());
-			tag.putInt("z", pos.getZ());
-			xpBlock.load(tag);
-			xpBlock.setChanged();
-			level.sendBlockUpdated(pos, state, state, 2);
+			if (stack.hasTag()) {
+				CompoundTag stackTag = stack.getTag();
+
+				if (stackTag.contains("BlockEntityTag"))
+					stackTag = stackTag.getCompound("BlockEntityTag");
+
+				xpBlock.setStoredXP(stackTag.getInt("stored_xp"));
+			}
 		}
 	}
 
@@ -159,11 +162,13 @@ public class XPBlock extends BaseEntityBlock {
 		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock) {
 			ItemStack stack = new ItemStack(asItem());
 
-			if (xpBlock.getStoredLevels() != 0) {
-				CompoundTag stackTag = new CompoundTag();
+			if (xpBlock.hasCustomName())
+				stack.setHoverName(xpBlock.getCustomName());
 
-				stackTag.put("BlockEntityTag", xpBlock.saveWithoutMetadata());
-				stack.setTag(stackTag);
+			if (xpBlock.getStoredLevels() != 0) {
+				CompoundTag stackTag = stack.getOrCreateTag();
+
+				stackTag.putInt("stored_xp", xpBlock.getStoredXP());
 				popResource(level, pos, stack);
 			}
 			else if (!xpBlock.isDestroyedByCreativePlayer())
@@ -176,7 +181,6 @@ public class XPBlock extends BaseEntityBlock {
 	@Override
 	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
 		super.neighborChanged(state, level, pos, block, fromPos, isMoving);
-
 		level.setBlockAndUpdate(pos, state.setValue(POWERED, level.hasNeighborSignal(pos)));
 	}
 
