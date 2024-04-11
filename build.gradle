@@ -18,7 +18,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 
-version = '1.10.4'
+version = '1.11'
 group = 'bl4ckscor3.mod.globalxp'
 
 base {

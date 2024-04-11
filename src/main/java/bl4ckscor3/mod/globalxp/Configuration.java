@@ -28,7 +28,8 @@ public class Configuration {
 	public static class Client {
 		public final DoubleValue spinSpeed;
 		public final DoubleValue bobSpeed;
-		public final BooleanValue renderNameplate;
+		public final BooleanValue renderXPInfo;
+		public final BooleanValue renderCustomName;
 
 		Client(ForgeConfigSpec.Builder builder) {
 			//@formatter:off
@@ -38,9 +39,12 @@ public class Configuration {
 			bobSpeed = builder
 					.comment("How fast the emerald should bob up and down (multiplier of the default speed)")
 					.defineInRange("bobSpeed", 1.0D, 0.0D, Double.MAX_VALUE);
-			renderNameplate = builder
+			renderXPInfo = builder
 					.comment("Whether info about the saved levels should be shown above the XP Block")
-					.define("renderNameplate", true);
+					.define("renderXPInfo", true);
+			renderCustomName = builder
+					.comment("Whether the block's custom name should be shown above the XP Block")
+					.define("renderCustomName", true);
 			//@formatter:on
 		}
 	}
