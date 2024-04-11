@@ -1,10 +1,11 @@
 package bl4ckscor3.mod.globalxp;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
 import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class Configuration {
 	public static final ModConfigSpec SERVER_SPEC;
@@ -21,6 +22,8 @@ public class Configuration {
 		SERVER_SPEC = serverSpecPair.getRight();
 		SERVER = serverSpecPair.getLeft();
 	}
+
+	private Configuration() {}
 
 	public static class Client {
 		public final DoubleValue spinSpeed;
