@@ -15,7 +15,10 @@ public class Configuration implements ConfigData {
 	public double bobSpeed = 1.0D;
 
 	@Comment("Whether info about the saved levels should be shown above the XP Block")
-	public boolean renderNameplate = true;
+	public boolean renderXPInfo = true;
+
+	@Comment("Whether the block's custom name should be shown above the XP Block")
+	public boolean renderCustomName = true;
 
 	@Comment("The amount of XP needed for the comparator to output a redstone signal of strength one. By default, the signal will be at full strength if the block has 30 levels stored.")
 	@BoundedDiscrete(max = 143_165_576) // Integer.MAX_VALUE / 15

@@ -4,7 +4,10 @@ import bl4ckscor3.mod.globalxp.GlobalXP;
 import bl4ckscor3.mod.globalxp.XPUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.level.Level;
@@ -12,7 +15,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-public class XPBlockEntity extends BlockEntity {
+public class XPBlockEntity extends BlockEntity implements Nameable {
+	private Component name;
 	private int storedXP = 0;
 	private float storedLevels = 0.0F;
 	private boolean destroyedByCreativePlayer;
@@ -111,12 +115,18 @@ public class XPBlockEntity extends BlockEntity {
 	@Override
 	public void saveAdditional(CompoundTag tag) {
 		tag.putInt("stored_xp", storedXP);
+
+		if (name != null)
+			tag.putString("CustomName", Component.Serializer.toJson(name));
 	}
 
 	@Override
 	public void load(CompoundTag tag) {
-		setStoredXP(tag.getInt("stored_xp"));
 		super.load(tag);
+		setStoredXP(tag.getInt("stored_xp"));
+
+		if (tag.contains("CustomName", Tag.TAG_STRING))
+			name = Component.Serializer.fromJson(tag.getString("CustomName"));
 	}
 
 	public static void serverTick(Level level, BlockPos pos, BlockState state, XPBlockEntity be) {
@@ -155,5 +165,28 @@ public class XPBlockEntity extends BlockEntity {
 	 */
 	public int getCapacity() {
 		return Integer.MAX_VALUE;
+	}
+
+	public void setCustomName(Component name) {
+		this.name = name;
+	}
+
+	@Override
+	public Component getName() {
+		return name != null ? name : getDefaultName();
+	}
+
+	@Override
+	public Component getDisplayName() {
+		return getName();
+	}
+
+	@Override
+	public Component getCustomName() {
+		return name;
+	}
+
+	public Component getDefaultName() {
+		return Component.translatable(GlobalXP.XP_BLOCK.getDescriptionId());
 	}
 }
