@@ -9,6 +9,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
 @EventBusSubscriber(modid = GlobalXP.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)
 public class ClientReg {
+	private ClientReg() {}
+
 	@SubscribeEvent
 	public static void onEntityRenderersRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
 		event.registerBlockEntityRenderer(GlobalXP.XP_BLOCK_ENTITY_TYPE.get(), XPBlockEntityRenderer::new);

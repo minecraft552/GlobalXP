@@ -23,6 +23,8 @@ public class Configuration {
 		SERVER = serverSpecPair.getLeft();
 	}
 
+	private Configuration() {}
+
 	public static class Client {
 		public final DoubleValue spinSpeed;
 		public final DoubleValue bobSpeed;
