@@ -6,11 +6,9 @@ import bl4ckscor3.mod.globalxp.Configuration;
 import bl4ckscor3.mod.globalxp.GlobalXP;
 import bl4ckscor3.mod.globalxp.openmods.utils.EnchantmentUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -51,7 +49,7 @@ public class XPBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+	public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock) {
 			if (!level.isClientSide) {
 				if (player.isShiftKeyDown()) {
@@ -139,55 +137,18 @@ public class XPBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-		if (level.isClientSide || !stack.hasTag())
-			return;
-
-		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock) {
-			if (stack.hasCustomHoverName())
-				xpBlock.setCustomName(stack.getHoverName());
-
-			if (stack.hasTag()) {
-				CompoundTag stackTag = stack.getTag();
-
-				if (stackTag.contains("BlockEntityTag"))
-					stackTag = stackTag.getCompound("BlockEntityTag");
-
-				xpBlock.setStoredXP(stackTag.getInt("stored_xp"));
-			}
-		}
-	}
-
-	@Override
 	public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock)
-			xpBlock.setDestroyedByCreativePlayer(player.isCreative());
+		if (!level.isClientSide && player.isCreative() && level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock && xpBlock.getStoredXP() > 0) {
+			ItemStack stack = new ItemStack(GlobalXP.XP_BLOCK_ITEM.get());
+			ItemEntity entity;
+
+			stack.applyComponents(xpBlock.collectComponents());
+			entity = new ItemEntity(level, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, stack);
+			entity.setDefaultPickUpDelay();
+			level.addFreshEntity(entity);
+		}
 
 		return super.playerWillDestroy(level, pos, state, player);
-	}
-
-	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.getBlock() == newState.getBlock())
-			return;
-
-		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock) {
-			ItemStack stack = new ItemStack(asItem());
-
-			if (xpBlock.hasCustomName())
-				stack.setHoverName(xpBlock.getCustomName());
-
-			if (xpBlock.getStoredLevels() != 0) {
-				CompoundTag stackTag = stack.getOrCreateTag();
-
-				stackTag.putInt("stored_xp", xpBlock.getStoredXP());
-				popResource(level, pos, stack);
-			}
-			else if (!xpBlock.isDestroyedByCreativePlayer())
-				popResource(level, pos, stack);
-		}
-
-		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
 	@Override

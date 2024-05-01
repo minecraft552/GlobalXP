@@ -2,43 +2,33 @@ package bl4ckscor3.mod.globalxp.xpblock;
 
 import java.util.List;
 
+import bl4ckscor3.mod.globalxp.GlobalXP;
 import bl4ckscor3.mod.globalxp.XPUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
 public class XPBlockItem extends BlockItem {
-	private static final Style STYLE = Style.EMPTY.applyFormat(ChatFormatting.GRAY);
-
 	public XPBlockItem(Block block) {
-		super(block, new Item.Properties());
+		super(block, new Item.Properties().component(GlobalXP.STORED_XP, 0));
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
-		if (!stack.hasTag())
+	public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+		int storedXP = stack.get(GlobalXP.STORED_XP);
+
+		if (storedXP == 0)
 			addInfo(tooltip, "0", 0);
-		else {
-			CompoundTag stackTag = stack.getTag();
-			int storedXP;
-
-			if (stackTag.contains(BLOCK_ENTITY_TAG))
-				stackTag = stackTag.getCompound(BLOCK_ENTITY_TAG);
-
-			storedXP = stackTag.getInt("stored_xp");
+		else
 			addInfo(tooltip, String.format("%.2f", XPUtils.calculateStoredLevels(storedXP)), storedXP);
-		}
 	}
 
 	public void addInfo(List<Component> tooltip, String storedLevels, int storedXP) {
-		tooltip.add(Component.translatable("info.globalxp.levels", storedLevels).setStyle(STYLE));
-		tooltip.add(Component.translatable("info.globalxp.xp", storedXP).setStyle(STYLE));
+		tooltip.add(Component.translatable("info.globalxp.levels", storedLevels).withStyle(ChatFormatting.GRAY));
+		tooltip.add(Component.translatable("info.globalxp.xp", storedXP).withStyle(ChatFormatting.GRAY));
 	}
 }

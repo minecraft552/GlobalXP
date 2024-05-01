@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[1,)"
-license="MIT https://github.com/bl4ckscor3/GlobalXP/blob/neoforge/1.20.4/LICENSE"
+license="MIT https://github.com/bl4ckscor3/GlobalXP/blob/neoforge/1.20.6/LICENSE"
 
 [[mods]]
 	modId="globalxp"
@@ -11,16 +11,19 @@ license="MIT https://github.com/bl4ckscor3/GlobalXP/blob/neoforge/1.20.4/LICENSE
 	displayURL="https://www.curseforge.com/minecraft/mc-mods/global-xp"
 	authors="bl4ckscor3"
 
+[[mixins]]
+    config="globalxp.mixins.json"
+
 [[dependencies.globalxp]]
     modId="neoforge"
     type="required"
-    versionRange="[20.4,)"
+    versionRange="[20.6,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.globalxp]]
     modId="minecraft"
     type="required"
-    versionRange="[1.20.4,1.21)"
+    versionRange="[1.20.6,1.21)"
     ordering="NONE"
     side="BOTH"
