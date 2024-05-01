@@ -3,6 +3,9 @@ package bl4ckscor3.mod.globalxp.xpblock;
 import bl4ckscor3.mod.globalxp.GlobalXP;
 import bl4ckscor3.mod.globalxp.XPUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap.Builder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -57,8 +60,8 @@ public class XPBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public CompoundTag getUpdateTag() {
-		return saveWithoutMetadata();
+	public CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
+		return saveCustomOnly(lookupProvider);
 	}
 
 	@Override
@@ -113,20 +116,40 @@ public class XPBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag tag) {
+	public void saveAdditional(CompoundTag tag, HolderLookup.Provider lookupProvider) {
 		tag.putInt("stored_xp", storedXP);
 
 		if (name != null)
-			tag.putString("CustomName", Component.Serializer.toJson(name));
+			tag.putString("CustomName", Component.Serializer.toJson(name, lookupProvider));
 	}
 
 	@Override
-	public void load(CompoundTag tag) {
-		super.load(tag);
+	public void loadAdditional(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+		super.loadAdditional(tag, lookupProvider);
 		setStoredXP(tag.getInt("stored_xp"));
 
 		if (tag.contains("CustomName", Tag.TAG_STRING))
-			name = Component.Serializer.fromJson(tag.getString("CustomName"));
+			name = parseCustomNameSafe(tag.getString("CustomName"), lookupProvider);
+	}
+
+	@Override
+	protected void applyImplicitComponents(DataComponentInput input) {
+		super.applyImplicitComponents(input);
+		name = input.get(DataComponents.CUSTOM_NAME);
+		setStoredXP(input.get(GlobalXP.STORED_XP));
+	}
+
+	@Override
+	public void removeComponentsFromTag(CompoundTag tag) {
+		tag.remove("CustomName");
+		tag.remove("stored_xp");
+	}
+
+	@Override
+	protected void collectImplicitComponents(Builder builder) {
+		super.collectImplicitComponents(builder);
+		builder.set(DataComponents.CUSTOM_NAME, name);
+		builder.set(GlobalXP.STORED_XP, storedXP);
 	}
 
 	public static void serverTick(Level level, BlockPos pos, BlockState state, XPBlockEntity be) {
