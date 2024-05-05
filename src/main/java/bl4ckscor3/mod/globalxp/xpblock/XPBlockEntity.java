@@ -136,7 +136,7 @@ public class XPBlockEntity extends BlockEntity implements Nameable {
 	protected void applyImplicitComponents(DataComponentInput input) {
 		super.applyImplicitComponents(input);
 		name = input.get(DataComponents.CUSTOM_NAME);
-		setStoredXP(input.get(GlobalXP.STORED_XP));
+		setStoredXP(input.getOrDefault(GlobalXP.STORED_XP, 0));
 	}
 
 	@Override
