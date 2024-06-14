@@ -25,6 +25,6 @@ public final class WailaDataProvider extends HUDOverlayModHandler implements IWa
 
 	@Override
 	public ResourceLocation getUid() {
-		return new ResourceLocation(GlobalXP.MOD_ID, "display");
+		return ResourceLocation.fromNamespaceAndPath(GlobalXP.MOD_ID, "display");
 	}
 }

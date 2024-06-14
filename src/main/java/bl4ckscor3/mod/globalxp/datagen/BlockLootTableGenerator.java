@@ -3,6 +3,7 @@ package bl4ckscor3.mod.globalxp.datagen;
 import java.util.Set;
 
 import bl4ckscor3.mod.globalxp.GlobalXP;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
@@ -15,8 +16,8 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class BlockLootTableGenerator extends BlockLootSubProvider {
-	protected BlockLootTableGenerator() {
-		super(Set.of(GlobalXP.XP_BLOCK.get().asItem()), FeatureFlags.REGISTRY.allFlags());
+	protected BlockLootTableGenerator(HolderLookup.Provider lookupProvider) {
+		super(Set.of(GlobalXP.XP_BLOCK.get().asItem()), FeatureFlags.REGISTRY.allFlags(), lookupProvider);
 	}
 
 	@Override

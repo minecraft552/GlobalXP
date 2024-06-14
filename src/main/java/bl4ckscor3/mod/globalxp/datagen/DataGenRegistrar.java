@@ -38,9 +38,9 @@ public class DataGenRegistrar {
 		generator.addProvider(event.includeServer(), new RecipeGenerator(output, lookupProvider));
 		//@formatter:off
 		generator.addProvider(true, new PackMetadataGenerator(output)
-                .add(PackMetadataSection.TYPE, new PackMetadataSection(Component.literal("Global XP resources & data"),
-                        DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
-                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+				.add(PackMetadataSection.TYPE, new PackMetadataSection(Component.literal("Global XP resources & data"),
+						DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
+						Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
 		//@formatter:on
 	}
 }

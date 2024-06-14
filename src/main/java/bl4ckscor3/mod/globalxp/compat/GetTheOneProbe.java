@@ -22,7 +22,7 @@ public final class GetTheOneProbe extends HUDOverlayModHandler implements Functi
 
 	@Override
 	public ResourceLocation getID() {
-		return new ResourceLocation(GlobalXP.MOD_ID, "default");
+		return ResourceLocation.fromNamespaceAndPath(GlobalXP.MOD_ID, "default");
 	}
 
 	@Override
