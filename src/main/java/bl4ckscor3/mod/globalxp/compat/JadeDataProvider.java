@@ -25,6 +25,6 @@ public final class JadeDataProvider extends HUDOverlayModHandler implements IWai
 
 	@Override
 	public ResourceLocation getUid() {
-		return new ResourceLocation(GlobalXP.MOD_ID, "display");
+		return ResourceLocation.fromNamespaceAndPath(GlobalXP.MOD_ID, "display");
 	}
 }

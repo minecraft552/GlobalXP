@@ -28,10 +28,10 @@ public class GlobalXP implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(MOD_ID, "xp_block"), XP_BLOCK);
-		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, new ResourceLocation(MOD_ID, "xp_block"), XP_BLOCK_ENTITY_TYPE);
-		Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(MOD_ID, "xp_block"), XP_BLOCK_ITEM);
-		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, new ResourceLocation(MOD_ID, "xp"), STORED_XP);
+		Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(MOD_ID, "xp_block"), XP_BLOCK);
+		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "xp_block"), XP_BLOCK_ENTITY_TYPE);
+		Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "xp_block"), XP_BLOCK_ITEM);
+		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "xp"), STORED_XP);
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> entries.accept(XP_BLOCK_ITEM));
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(entries -> entries.accept(XP_BLOCK_ITEM));
 	}
