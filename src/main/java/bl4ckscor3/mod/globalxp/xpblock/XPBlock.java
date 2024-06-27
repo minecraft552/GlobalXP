@@ -22,9 +22,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.Collections;
+import java.util.List;
 
 public class XPBlock extends BaseEntityBlock {
 	private static final VoxelShape SHAPE = Block.box(0.0001D, 0.0001D, 0.0001D, 15.999D, 15.999D, 15.999D);
@@ -61,8 +66,7 @@ public class XPBlock extends BaseEntityBlock {
 
 						if (xpToStore == 0 && player.experienceLevel > 0) //player has exactly x > 0 levels (xp bar looks empty)
 							xpToStore = xpForCurrentLevel - EnchantmentUtils.getExperienceForLevel(player.experienceLevel - 1);
-					}
-					else
+					} else
 						xpToStore = EnchantmentUtils.getPlayerXP(player);
 
 					if (xpToStore == 0)
@@ -71,8 +75,7 @@ public class XPBlock extends BaseEntityBlock {
 					xpBlock.addXP(xpToStore); //store as much XP as possible
 					EnchantmentUtils.addPlayerXP(player, -xpToStore); //negative value removes xp
 					return InteractionResult.SUCCESS;
-				}
-				else if (!player.isShiftKeyDown()) {
+				} else if (!player.isShiftKeyDown()) {
 					int xpRetrieved;
 
 					if (GlobalXP.CONFIG.retrievalAmount != -1)
@@ -81,8 +84,7 @@ public class XPBlock extends BaseEntityBlock {
 						int xpToRetrieve = EnchantmentUtils.getExperienceForLevel(player.experienceLevel + 1) - EnchantmentUtils.getPlayerXP(player);
 
 						xpRetrieved = (int) (xpBlock.removeXP(xpToRetrieve) * GlobalXP.CONFIG.retrievalPercentage);
-					}
-					else {
+					} else {
 						xpRetrieved = (int) (xpBlock.getStoredXP() * GlobalXP.CONFIG.retrievalPercentage);
 						xpBlock.setStoredXP(0);
 					}
@@ -108,8 +110,7 @@ public class XPBlock extends BaseEntityBlock {
 				orb.addTag("GlobalXPMarker"); //so the xp block won't pick it back up
 				level.addFreshEntity(orb);
 			}
-		}
-		else
+		} else
 			EnchantmentUtils.addPlayerXP(player, amount);
 	}
 
@@ -148,34 +149,38 @@ public class XPBlock extends BaseEntityBlock {
 
 	@Override
 	public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock)
-			xpBlock.setDestroyedByCreativePlayer(player.isCreative());
-
-		super.playerWillDestroy(level, pos, state, player);
-	}
-
-	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.getBlock() == newState.getBlock())
-			return;
-
-		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock) {
+		if (level.getBlockEntity(pos) instanceof XPBlockEntity xpBlock && !level.isClientSide) {
 			ItemStack stack = new ItemStack(asItem());
 
 			if (xpBlock.hasCustomName())
 				stack.setHoverName(xpBlock.getCustomName());
 
-			if (xpBlock.getStoredLevels() != 0) {
-				CompoundTag stackTag = stack.getOrCreateTag();
+			CompoundTag stackTag = stack.getOrCreateTag();
 
-				stackTag.putInt("stored_xp", xpBlock.getStoredXP());
+			stackTag.putInt("stored_xp", xpBlock.getStoredXP());
+
+			if (xpBlock.getStoredLevels() != 0 && player.isCreative()) {
 				popResource(level, pos, stack);
 			}
-			else if (!xpBlock.isDestroyedByCreativePlayer())
-				popResource(level, pos, stack);
 		}
 
-		super.onRemove(state, level, pos, newState, isMoving);
+		super.playerWillDestroy(level, pos, state, player);
+	}
+
+	@Override
+	public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+		if (builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof XPBlockEntity xpBlock) {
+			ItemStack stack = new ItemStack(asItem());
+
+			if (xpBlock.hasCustomName())
+				stack.setHoverName(xpBlock.getCustomName());
+
+			CompoundTag stackTag = stack.getOrCreateTag();
+
+			stackTag.putInt("stored_xp", xpBlock.getStoredXP());
+			return List.of(stack);
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
